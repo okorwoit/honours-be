@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 
 const projectSchema = new Schema({
   projectName: { type: String, required: true },
+  projectStartDate: { type: Date, required: true },
+  projectEndDate: { type: Date, required: true },
   numberOfTrees: { type: Number, required: true },
   polygonCoordinates: { type: [[Number]], required: true },
   treeTypes: { type: [String], required: true },
