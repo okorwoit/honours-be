@@ -1,17 +1,24 @@
 // import user model
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const registerUser = async (req, res) => {
-  const { companyName, companyLogo, name, role, email, password } = req.body;
+  const { companyName, name, role, email, password } = req.body;
   try {
+    //Check if user already exists
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).send("User already exists");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({
       companyName,
-      companyLogo,
       name,
       role,
       email,
-      password,
+      password: hashedPassword,
     });
     await user.save();
     res.status(201).send(user);
@@ -23,8 +30,15 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.find({ email, password });
+    const user = await User.findOne({ email });
     if (!user) {
+      return res
+        .status(401)
+        .send({ error: "Login failed! Check authentication credentials" });
+    }
+
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
       return res
         .status(401)
         .send({ error: "Login failed! Check authentication credentials" });

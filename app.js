@@ -5,6 +5,7 @@ const { spawn } = require('child_process');
 const connectDB = require('./config'); // Import the database connection function
 const userRoutes = require('./routes/user'); // Import user routes
 const projectRoutes = require('./routes/project'); // Import project routes
+const cors = require('cors');
 
 // Initialize the Express application
 const app = express();
@@ -14,6 +15,17 @@ connectDB();
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
+const allowedOrigins = ['http://localhost:5173', 'https://ml-frontend.vercel.app'];
+app.use(cors({
+    origin: function(origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const message = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(message), false);
+        }
+        return callback(null, true);
+    }
+}));
 
 // Define routes for user-related API endpoints
 app.use('/api/users', userRoutes);

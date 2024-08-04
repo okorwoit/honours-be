@@ -9,7 +9,15 @@ const projectSchema = new Schema({
   polygonCoordinates: { type: [[Number]], required: true },
   treeTypes: { type: [String], required: true },
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  analysisResults: [{ type: Object, required: true }],
+  records: [
+    {
+      date: { type: Date, required: true },
+      numberOfTrees: { type: Number, required: true },
+      originalImageUrl: { type: String, required: true },
+      annotatedImageUrl: { type: String, required: true },
+    }
+  ]
 });
+
 
 module.exports = mongoose.model("Project", projectSchema);
